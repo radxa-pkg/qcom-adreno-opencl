@@ -1,0 +1,20 @@
+Source: qcom-adreno-opencl
+Maintainer: "Radxa Computer Co., Ltd" <dev@radxa.com>
+Section: admin
+Priority: standard
+Standards-Version: 4.6.0
+Build-Depends: debhelper-compat (= 13),
+               debhelper (>=13~),
+               devscripts,
+               lintian,
+               dh-exec,
+               pandoc,
+
+Package: qcom-adreno-opencl
+Architecture: all
+Section: admin
+Priority: optional
+Depends: ${misc:Depends},
+Description: qcom-adreno-opencl
+ This package provides the qcom-adreno-opencl.
+
