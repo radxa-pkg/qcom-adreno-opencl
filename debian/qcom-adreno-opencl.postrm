@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+ICD_FILE=/etc/OpenCL/vendors/adrenocl.icd
+DEFAULT=/usr/share/qcom-adreno-opencl/adrenocl.icd
+
+case "$1" in
+    purge)
+        if [ -L "$ICD_FILE" ] && [ "$(readlink "$ICD_FILE")" = "$DEFAULT" ]; then
+            rm -f "$ICD_FILE"
+        fi
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

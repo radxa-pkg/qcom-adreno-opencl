@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+ICD_DIR=/etc/OpenCL/vendors
+ICD_FILE=$ICD_DIR/adrenocl.icd
+DEFAULT=/usr/share/qcom-adreno-opencl/adrenocl.icd
+
+case "$1" in
+    configure)
+        mkdir -p "$ICD_DIR"
+        if [ ! -e "$ICD_FILE" ] && [ ! -L "$ICD_FILE" ]; then
+            ln -s "$DEFAULT" "$ICD_FILE"
+        fi
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

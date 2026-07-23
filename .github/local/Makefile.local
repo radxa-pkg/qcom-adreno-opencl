@@ -1,0 +1,88 @@
+# Qualcomm Adreno OpenCL prebuilt driver
+# Based on Arch PKGBUILD: pkg-qcom-adreno-opencl-bin
+
+CUSTOM_DEBUILD_ARG := -aarm64 -Pcross
+
+PKG          := qcom-adreno-opencl
+PKG_MIDSTREAM := qcom-adreno-opencl-midstream
+INSTALL_DIR  := $(PKG)
+INSTALL_MIDSTREAM := $(PKG_MIDSTREAM)
+LIB_DIR      := $(INSTALL_DIR)/usr/lib/aarch64-linux-gnu
+LIB_DIR_MIDSTREAM := $(INSTALL_MIDSTREAM)/usr/lib/aarch64-linux-gnu
+
+# Versions (from PKGBUILD)
+ARMV8_VER    := 1.855.3
+ARMV8_DATE   := 260318
+QCM6490_VER  := 1.838.3
+QCM6490_DATE := 251215
+SPFREL       := r1.0_00114.0
+
+ARMV8_URL    := https://qartifactory-edge.qualcomm.com/artifactory/qsc_releases/software/chip/component/gfx-adreno.le.0.0/$(ARMV8_DATE)/prebuilt_yocto/qcom-adreno_$(ARMV8_VER)_armv8a.tar.gz
+QCM6490_URL  := https://softwarecenter.qualcomm.com/nexus/generic/software/chip/qualcomm_linux-spf-1-0/qualcomm-linux-spf-1-0_test_device_public/$(SPFREL)/le-qclinux-1-0-r1/apps_proc/prebuilt_HY22/qcom-adreno/$(QCM6490_DATE)/qcom-adreno_$(QCM6490_VER)_qcm6490.tar.gz
+ARMV8_ARCHIVE   := _armv8-$(ARMV8_VER)-$(ARMV8_DATE).tar.gz
+QCM6490_ARCHIVE := _qcm6490-$(QCM6490_VER)-$(QCM6490_DATE)-$(SPFREL).tar.gz
+
+.PHONY: build
+build: $(ARMV8_ARCHIVE) $(QCM6490_ARCHIVE)
+	rm -rf $(PKG) $(PKG_MIDSTREAM) _armv8 _qcm6490
+	mkdir -p _armv8 _qcm6490
+
+	tar xzf $(ARMV8_ARCHIVE)   -C _armv8
+	tar xzf $(QCM6490_ARCHIVE) -C _qcm6490
+
+	# OpenCL ICD driver
+	install -Dm755 _armv8/usr/lib/libOpenCL_adreno.so.1 \
+		$(LIB_DIR)/libOpenCL_adreno.so.1
+
+	# OpenCL loader (from qcm6490)
+	install -Dm755 _qcm6490/usr/lib/libOpenCL.so.1 \
+		$(LIB_DIR_MIDSTREAM)/libOpenCL.so.1
+	ln -sf libOpenCL.so.1 $(LIB_DIR_MIDSTREAM)/libOpenCL.so
+
+	# LLVM backends
+	for lib in libllvm-qcom.so.1 libllvm-glnext.so.1 libllvm-qgl.so.1; do \
+		install -Dm755 _armv8/usr/lib/$$lib $(LIB_DIR)/$$lib; \
+	done
+
+	# GPU support libraries
+	for lib in libgsl.so.1 libadreno_utils.so.1 libCB.so.1 \
+	           libq3dtools_adreno.so.1 libq3dtools_esx.so.1; do \
+		install -Dm755 _armv8/usr/lib/$$lib $(LIB_DIR)/$$lib; \
+	done
+
+	# ICD registration (installed by postinst to /etc if not present)
+	install -Dm644 _armv8/etc/OpenCL/vendors/adrenocl.icd \
+		$(INSTALL_DIR)/usr/share/$(PKG)/adrenocl.icd
+
+	# Headers
+	install -Dm644 _armv8/usr/include/CL/cl_ext_qcom.h \
+		$(INSTALL_DIR)/usr/include/CL/cl_ext_qcom.h
+
+	# pkgconfig
+	install -Dm644 _qcm6490/usr/lib/pkgconfig/opencl.pc \
+		$(LIB_DIR_MIDSTREAM)/pkgconfig/OpenCL.pc
+	install -Dm644 _qcm6490/usr/lib/pkgconfig/adreno_utils.pc \
+		$(LIB_DIR_MIDSTREAM)/pkgconfig/adreno_utils.pc
+	sed -i 's|^libdir=/usr/lib$$|libdir=/usr/lib/aarch64-linux-gnu|' \
+		$(LIB_DIR_MIDSTREAM)/pkgconfig/OpenCL.pc \
+		$(LIB_DIR_MIDSTREAM)/pkgconfig/adreno_utils.pc
+
+	# Environment (under /usr/share to avoid dpkg conffile prompts)
+	install -Dm644 _armv8/etc/profile.d/qcom-adreno-cl.sh \
+		$(INSTALL_DIR)/usr/share/$(PKG)/profile.d/qcom-adreno-cl.sh
+	install -Dm644 _armv8/etc/environment.d/qcom-adreno-cl.conf \
+		$(INSTALL_DIR)/usr/share/$(PKG)/environment.d/qcom-adreno-cl.conf
+
+	# License
+	install -Dm644 _armv8/NOTICE \
+		$(INSTALL_DIR)/usr/share/licenses/$(PKG)/NOTICE
+
+	rm -rf _armv8 _qcm6490
+
+$(ARMV8_ARCHIVE):
+	wget -q -O $@.tmp "$(ARMV8_URL)"
+	mv $@.tmp $@
+
+$(QCM6490_ARCHIVE):
+	wget -q -O $@.tmp "$(QCM6490_URL)"
+	mv $@.tmp $@

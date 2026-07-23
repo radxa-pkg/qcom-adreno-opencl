@@ -20,6 +20,18 @@
 # Output folder
 /out
 
+# Packaging staging directory
+/qcom-adreno-opencl/
+/qcom-adreno-opencl-midstream/
+
+# Downloaded tarballs and extracts
+/_armv8-*.tar.gz
+/_armv8-*.tar.gz.tmp
+/_qcm6490-*.tar.gz
+/_qcm6490-*.tar.gz.tmp
+/_armv8/
+/_qcm6490/
+
 # Logs
 /*.log
 
