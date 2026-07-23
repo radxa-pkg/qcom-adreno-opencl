@@ -9,12 +9,39 @@ Build-Depends: debhelper-compat (= 13),
                lintian,
                dh-exec,
                pandoc,
+               libc6:arm64,
+               libstdc++6:arm64,
+               libglib2.0-0:arm64,
+               zlib1g:arm64,
 
 Package: qcom-adreno-opencl
-Architecture: all
+Architecture: any
 Section: admin
 Priority: optional
 Depends: ${misc:Depends},
-Description: qcom-adreno-opencl
- This package provides the qcom-adreno-opencl.
+         libglib2.0-0,
+         zlib1g,
+Recommends: qcom-libdmabufheap,
+Provides: opencl-driver,
+Conflicts: mesa-opencl-icd,
+Description: Qualcomm Adreno GPU OpenCL driver (prebuilt binary)
+ Qualcomm proprietary OpenCL ICD driver for Adreno GPUs.
+ .
+ This package contains:
+  - Adreno OpenCL ICD driver (libOpenCL_adreno.so)
+  - LLVM shader compiler backends
+  - GPU support libraries
 
+Package: qcom-adreno-opencl-midstream
+Architecture: any
+Section: admin
+Priority: optional
+Depends: ${misc:Depends},
+         qcom-adreno-opencl (= ${binary:Version}),
+Provides: opencl-icd,
+          libopencl1,
+          libopencl-1.2-1,
+Conflicts: ocl-icd-libopencl1,
+Description: Qualcomm Adreno OpenCL support for midstream kernels
+ OpenCL loader and development metadata for Qualcomm devices supported by
+ Radxa midstream kernels.

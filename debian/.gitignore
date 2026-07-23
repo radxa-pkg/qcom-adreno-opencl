@@ -8,3 +8,5 @@
 /*.substvars
 /tmp
 
+qcom-adreno-opencl
+qcom-adreno-opencl-midstream

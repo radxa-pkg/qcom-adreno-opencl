@@ -1,0 +1,10 @@
+# Prebuilt ARM64 loader
+lacks-ldconfig-trigger
+missing-dependency-on-libc
+no-shlibs
+unstripped-binary-or-object
+
+# Linker symlink and unversioned proprietary loader symbols
+link-to-shared-library-in-wrong-package
+package-name-doesnt-match-sonames
+shared-library-lacks-version

@@ -1,0 +1,30 @@
+# Prebuilt ARM64 binary package — lintian overrides
+# These are expected for a binary-only package that ships pre-compiled
+# Qualcomm Adreno GPU libraries without rebuilding from source.
+
+# Ships prebuilt .so files — not compiled during build
+lacks-ldconfig-trigger
+missing-dependency-on-libc
+no-shlibs
+shared-library-lacks-stack-section
+unstripped-binary-or-object
+library-not-linked-against-libc
+undeclared-elf-prerequisites
+
+# Linker symlink alongside shared lib in same package
+link-to-shared-library-in-wrong-package
+
+# Package name is descriptive, not SONAME-based
+package-name-doesnt-match-sonames
+
+# Cross-compile pkg-config is not available
+pkg-config-unavailable-for-cross-compilation
+
+# Shell snippet, not a standalone script
+script-not-executable
+
+# Shared libs without versioned symbols
+shared-library-lacks-version
+
+# No man pages for proprietary driver
+no-manual-page
