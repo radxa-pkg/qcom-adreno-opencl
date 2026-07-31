@@ -1,6 +1,6 @@
-qcom-adreno-opencl (1.855.3-1) UNRELEASED; urgency=medium
+qcom-adreno-opencl (1.855.3-1) unstable; urgency=medium
 
   * Initial packaging of Qualcomm Adreno OpenCL prebuilt driver
   * Based on gfx-adreno.le.0.0 (armv8a) + qualcomm-linux-spf (qcm6490)
 
- -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Thu, 16 Jul 2026 08:00:00 +0800
+ -- "Radxa Computer Co., Ltd" <dev@radxa.com>  Fri, 31 Jul 2026 02:41:09 +0000
